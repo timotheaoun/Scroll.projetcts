@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Galerie GitHub - Scroll Infini</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      text-align: center;
+      padding: 20px;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      padding: 10px;
+    }
+    .gallery img {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<h1>Galerie GitHub - Scroll Infini</h1>
+<div class="gallery" id="gallery"></div>
+
+<script>
+  const gallery = document.getElementById("gallery");
+  let currentId = 1;         // ID utilisateur GitHub de départ
+  const batchSize = 30;      // Combien d'avatars charger à la fois
+  let isLoading = false;
+
+  function loadImages() {
+    if (isLoading) return;
+    isLoading = true;
+
+    for (let i = 0; i < batchSize; i++) {
+      const img = document.createElement("img");
+      img.src = `https://avatars.githubusercontent.com/u/${currentId}?s=96&v=5`;
+      img.alt = `GitHub User ${currentId}`;
+      img.onerror = () => img.remove(); // Supprime l'image si l'utilisateur n'existe pas
+      gallery.appendChild(img);
+      currentId++;
+    }
+
+    isLoading = false;
+  }
+
+  // Chargement initial
+  loadImages();
+
+  // Détection de scroll en bas de page
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.body.offsetHeight;
+
+    if (scrollTop + windowHeight >= documentHeight - 100) {
+      loadImages();
+    }
+  });
+</script>
+
+</body>
+</html>
