@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>Décimales π simulées infinies</title>
+<style>
+  body {
+    font-family: monospace;
+    background: #f0f0f0;
+    padding: 20px;
+    max-width: 700px;
+    margin: auto;
+  }
+  .digit {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    margin: 1px 0;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+    color: white;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+
+<h1 style="text-align:center;">Décimales de π simulées infinies (scroll)</h1>
+<div id="pi-container"></div>
+
+<script>
+  const baseDecimals = "14159265358979323846264338327950288419716939937510" +
+                       "58209749445923078164062862089986280348253421170679";
+
+  function* decimalGenerator() {
+    let index = 0;
+    while(true) {
+      yield baseDecimals[index];
+      index = (index + 1) % baseDecimals.length;
+    }
+  }
+
+  const gen = decimalGenerator();
+  const container = document.getElementById("pi-container");
+  const batchSize = 500;
+
+  function getColorForDigit(d) {
+    const light = [160, 196, 255];
+    const dark = [0, 53, 102];
+    const ratio = d / 9;
+    const r = Math.round(light[0] + ratio * (dark[0] - light[0]));
+    const g = Math.round(light[1] + ratio * (dark[1] - light[1]));
+    const b = Math.round(light[2] + ratio * (dark[2] - light[2]));
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function loadBatch() {
+    const fragment = document.createDocumentFragment();
+    for(let i=0; i<batchSize; i++) {
+      const digit = gen.next().value;
+      const span = document.createElement("span");
+      span.className = "digit";
+      span.textContent = digit;
+      span.style.backgroundColor = getColorForDigit(parseInt(digit));
+      fragment.appendChild(span);
+    }
+    container.appendChild(fragment);
+  }
+
+  loadBatch();
+
+  window.addEventListener("scroll", () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+      loadBatch();
+    }
+  });
+</script>
+
+</body>
+</html>
